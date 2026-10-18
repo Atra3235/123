@@ -1,0 +1,700 @@
+<!DOCTYPE html>
+<html lang="fa" dir="rtl">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <meta name="theme-color" content="#1a73e8">
+  <meta name="description" content="اپلیکیشن مدیریت جایگاه سوخت">
+  <title>مدیریت جایگاه سوخت</title>
+  <link rel="manifest" href="manifest.json">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Vazirmatn:wght@100;300;400;500;700;900&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --primary: #1a73e8;
+      --primary-dark: #1557b0;
+      --success: #0f9d58;
+      --danger: #d32f2f;
+      --warning: #f9ab00;
+      --bg: #f8fafc;
+      --surface: #ffffff;
+      --text: #1f2937;
+      --text-light: #6b7280;
+      --border: #e5e7eb;
+      --shadow: 0 2px 8px rgba(0,0,0,0.08);
+    }
+    [data-theme="dark"] {
+      --bg: #0f172a;
+      --surface: #1e293b;
+      --text: #f3f4f6;
+      --text-light: #9ca3af;
+      --border: #334155;
+      --shadow: 0 2px 8px rgba(0,0,0,0.3);
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    html, body { height: 100%; }
+    body {
+      font-family: 'Vazirmatn', Tahoma, sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      direction: rtl;
+      line-height: 1.6;
+      transition: background 0.3s, color 0.3s;
+    }
+    .hidden { display: none !important; }
+    .container { max-width: 960px; margin: 0 auto; padding: 16px; }
+    /* Login */
+    .login-wrapper {
+      min-height: 100vh; display: flex; align-items: center; justify-content: center;
+      background: linear-gradient(135deg, var(--primary) 0%, #0d47a1 100%);
+      padding: 16px;
+    }
+    .login-card {
+      background: var(--surface); border-radius: 16px; padding: 24px;
+      box-shadow: var(--shadow); width: 100%; max-width: 360px;
+    }
+    .login-card h1 { font-size: 1.25rem; text-align: center; margin-bottom: 24px; color: var(--primary); }
+    .form-group { margin-bottom: 16px; }
+    label { display: block; margin-bottom: 6px; font-size: 0.9rem; font-weight: 500; }
+    input, select, textarea {
+      width: 100%; padding: 10px 12px; border: 1px solid var(--border);
+      border-radius: 8px; font-family: inherit; font-size: 0.95rem;
+      background: var(--surface); color: var(--text); transition: border 0.2s;
+    }
+    input:focus, select:focus, textarea:focus { outline: none; border-color: var(--primary); }
+    .btn {
+      display: inline-flex; align-items: center; justify-content: center; gap: 6px;
+      border: none; border-radius: 8px; padding: 10px 16px; cursor: pointer;
+      font-family: inherit; font-size: 0.95rem; font-weight: 600; transition: opacity 0.2s, transform 0.1s;
+    }
+    .btn:active { transform: scale(0.98); }
+    .btn-primary { background: var(--primary); color: #fff; }
+    .btn-success { background: var(--success); color: #fff; }
+    .btn-danger { background: var(--danger); color: #fff; }
+    .btn-warning { background: var(--warning); color: #1f2937; }
+    .btn-secondary { background: var(--border); color: var(--text); }
+    .btn-block { width: 100%; }
+    .btn-sm { padding: 6px 12px; font-size: 0.85rem; }
+    .error { color: var(--danger); font-size: 0.85rem; margin-top: 8px; text-align: center; }
+    /* Header */
+    .app-header {
+      position: sticky; top: 0; z-index: 100; background: var(--surface);
+      border-bottom: 1px solid var(--border); box-shadow: var(--shadow); padding: 12px 0;
+    }
+    .header-inner { display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 8px; }
+    .brand { font-weight: 700; color: var(--primary); font-size: 1.1rem; }
+    .clock { font-size: 0.9rem; color: var(--text-light); text-align: left; }
+    .header-actions { display: flex; gap: 8px; align-items: center; }
+    /* Tabs */
+    .tabs { display: flex; gap: 6px; overflow-x: auto; padding: 8px 0; border-bottom: 1px solid var(--border); margin-bottom: 16px; }
+    .tab { white-space: nowrap; padding: 8px 14px; border-radius: 20px; cursor: pointer; font-size: 0.9rem; font-weight: 500; background: transparent; color: var(--text-light); border: 1px solid transparent; }
+    .tab.active { background: var(--primary); color: #fff; }
+    .tab:hover:not(.active) { background: var(--border); }
+    /* Cards */
+    .card { background: var(--surface); border-radius: 12px; padding: 16px; box-shadow: var(--shadow); margin-bottom: 16px; }
+    .card-title { font-size: 1rem; font-weight: 700; margin-bottom: 12px; color: var(--primary); }
+    .grid-2 { display: grid; grid-template-columns: 1fr; gap: 12px; }
+    @media (min-width: 640px) { .grid-2 { grid-template-columns: 1fr 1fr; } }
+    .summary-box { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+    .stat { background: var(--bg); border-radius: 8px; padding: 12px; border: 1px solid var(--border); }
+    .stat-label { font-size: 0.8rem; color: var(--text-light); margin-bottom: 4px; }
+    .stat-value { font-size: 1.1rem; font-weight: 700; }
+    .positive { color: var(--success); }
+    .negative { color: var(--danger); }
+    /* Tables */
+    .table-wrap { overflow-x: auto; }
+    table { width: 100%; border-collapse: collapse; font-size: 0.85rem; }
+    th, td { padding: 10px; border: 1px solid var(--border); text-align: center; }
+    th { background: var(--bg); font-weight: 700; color: var(--text-light); }
+    tr:nth-child(even) { background: var(--bg); }
+    /* Buttons row */
+    .btn-row { display: flex; gap: 8px; flex-wrap: wrap; margin-top: 12px; }
+    /* Modal */
+    .modal-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.5); display: flex; align-items: center; justify-content: center; z-index: 200; padding: 16px; }
+    .modal { background: var(--surface); border-radius: 16px; width: 100%; max-width: 400px; padding: 20px; }
+    .modal h3 { margin-bottom: 12px; }
+    .modal p { margin-bottom: 16px; color: var(--text-light); }
+    /* Toggle switch */
+    .toggle { display: flex; align-items: center; gap: 8px; cursor: pointer; }
+    .toggle input { display: none; }
+    .toggle-switch { width: 44px; height: 24px; background: var(--border); border-radius: 12px; position: relative; transition: background 0.2s; }
+    .toggle-switch::after { content: ''; position: absolute; width: 20px; height: 20px; background: #fff; border-radius: 50%; top: 2px; right: 2px; transition: transform 0.2s; }
+    .toggle input:checked + .toggle-switch { background: var(--primary); }
+    .toggle input:checked + .toggle-switch::after { transform: translateX(-20px); }
+    /* Helpers */
+    .text-center { text-align: center; }
+    .mb-1 { margin-bottom: 8px; }
+    .empty-state { text-align: center; padding: 40px 16px; color: var(--text-light); }
+    .hint { font-size: 0.8rem; color: var(--text-light); margin-top: 4px; }
+    /* Print */
+    @media print { .app-header, .tabs, .btn-row, .no-print { display: none; } .card { box-shadow: none; border: 1px solid #ddd; } }
+  </style>
+</head>
+<body>
+  <!-- Login -->
+  <div id="loginPage" class="login-wrapper">
+    <div class="login-card">
+      <h1>مدیریت جایگاه سوخت</h1>
+      <form id="loginForm">
+        <div class="form-group">
+          <label for="username">نام کاربری</label>
+          <input type="text" id="username" autocomplete="username" placeholder="admin" required>
+        </div>
+        <div class="form-group">
+          <label for="password">رمز عبور</label>
+          <input type="password" id="password" autocomplete="current-password" placeholder="••••" required>
+        </div>
+        <button type="submit" class="btn btn-primary btn-block">ورود</button>
+        <div id="loginError" class="error hidden"></div>
+      </form>
+    </div>
+  </div>
+
+  <!-- App -->
+  <div id="appPage" class="hidden">
+    <header class="app-header">
+      <div class="container header-inner">
+        <div class="brand">⛽ مدیریت جایگاه سوخت</div>
+        <div class="header-actions">
+          <div id="liveClock" class="clock"></div>
+          <button id="themeBtn" class="btn btn-secondary btn-sm" title="تغییر تم">🌓</button>
+          <button id="logoutBtn" class="btn btn-danger btn-sm">خروج</button>
+        </div>
+      </div>
+    </header>
+
+    <main class="container">
+      <div class="tabs" id="tabs">
+        <button class="tab active" data-tab="input">ثبت روزانه</button>
+        <button class="tab" data-tab="report">گزارش روزانه</button>
+        <button class="tab" data-tab="monthly">خلاصه ماهانه</button>
+        <button class="tab" data-tab="settings">تنظیمات</button>
+      </div>
+
+      <!-- Input Tab -->
+      <section id="inputTab" class="tab-content">
+        <div class="card">
+          <div class="card-title">ورود اطلاعات روزانه</div>
+          <div class="grid-2">
+            <div class="form-group">
+              <label for="inputDate">تاریخ</label>
+              <input type="text" id="inputDate" readonly>
+            </div>
+            <div class="form-group">
+              <label for="monthStartStock">موجودی اول ماه (لیتر)</label>
+              <input type="number" id="monthStartStock" min="0" step="1">
+            </div>
+            <div class="form-group">
+              <label for="currentStock">موجودی فعلی (لیتر)</label>
+              <input type="number" id="currentStock" min="0" step="1">
+            </div>
+            <div class="form-group">
+              <label for="cardSales">فروش کارتخوان (ریال)</label>
+              <input type="number" id="cardSales" min="0" step="1">
+            </div>
+            <div class="form-group">
+              <label for="cashSales">فروش نقدی (ریال)</label>
+              <input type="number" id="cashSales" min="0" step="1">
+            </div>
+            <div class="form-group">
+              <label for="vol15000">حجم ۱۵٬۰۰۰ ریال/لیتر (لیتر)</label>
+              <input type="number" id="vol15000" min="0" step="1">
+            </div>
+            <div class="form-group">
+              <label for="vol30000">حجم ۳۰٬۰۰۰ ریال/لیتر (لیتر)</label>
+              <input type="number" id="vol30000" min="0" step="1">
+            </div>
+            <div class="form-group">
+              <label for="vol100000">حجم ۱۰۰٬۰۰۰ ریال/لیتر (لیتر)</label>
+              <input type="number" id="vol100000" min="0" step="1">
+            </div>
+          </div>
+          <div class="btn-row">
+            <button id="saveDayBtn" class="btn btn-success">💾 ذخیره</button>
+            <button id="clearInputBtn" class="btn btn-secondary">پاک کردن</button>
+          </div>
+        </div>
+
+        <div class="card">
+          <div class="card-title">محاسبات خودکار</div>
+          <div class="summary-box">
+            <div class="stat"><div class="stat-label">اختلاف نرخ ۳۰٬۰۰۰</div><div id="diff30000" class="stat-value">۰</div></div>
+            <div class="stat"><div class="stat-label">اختلاف نرخ ۱۰۰٬۰۰۰</div><div id="diff100000" class="stat-value">۰</div></div>
+            <div class="stat"><div class="stat-label">جمع اختلاف</div><div id="totalDiff" class="stat-value">۰</div></div>
+            <div class="stat"><div class="stat-label">کل فروش روزانه</div><div id="totalSales" class="stat-value">۰</div></div>
+            <div class="stat"><div class="stat-label">حجم فروش کل</div><div id="totalVolume" class="stat-value">۰</div></div>
+            <div class="stat"><div class="stat-label">مصرف</div><div id="consumption" class="stat-value">۰</div></div>
+            <div class="stat"><div class="stat-label">اختلاف (مصرف - فروش)</div><div id="difference" class="stat-value">۰</div></div>
+            <div class="stat"><div class="stat-label">تعداد تانکر</div><div id="tankersNeeded" class="stat-value">۰</div></div>
+            <div class="stat"><div class="stat-label">هزینه تانکر</div><div id="tankerCost" class="stat-value">۰</div></div>
+            <div class="stat"><div class="stat-label">سود/زیان</div><div id="profitLoss" class="stat-value">۰</div></div>
+          </div>
+        </div>
+      </section>
+
+      <!-- Report Tab -->
+      <section id="reportTab" class="tab-content hidden">
+        <div class="card">
+          <div class="card-title">گزارش روزانه</div>
+          <div class="table-wrap">
+            <table id="reportTable">
+              <thead>
+                <tr><th>تاریخ</th><th>فروش کل</th><th>حجم</th><th>مصرف</th><th>اختلاف</th><th>سود/زیان</th><th>عملیات</th></tr>
+              </thead>
+              <tbody></tbody>
+            </table>
+          </div>
+          <div id="emptyReport" class="empty-state hidden">رکوردی یافت نشد.</div>
+          <div class="btn-row">
+            <button id="exportCsvBtn" class="btn btn-primary">⬇️ خروجی CSV</button>
+            <button id="importCsvBtn" class="btn btn-warning">⬆️ ورودی CSV</button>
+            <input type="file" id="csvFile" accept=".csv" class="hidden">
+          </div>
+        </div>
+      </section>
+
+      <!-- Monthly Tab -->
+      <section id="monthlyTab" class="tab-content hidden">
+        <div class="card">
+          <div class="card-title">خلاصه ماهانه</div>
+          <div class="form-group">
+            <label for="monthSelect">ماه</label>
+            <select id="monthSelect"></select>
+          </div>
+          <div class="summary-box">
+            <div class="stat"><div class="stat-label">تعداد روزهای ثبت شده</div><div id="monthCount" class="stat-value">۰</div></div>
+            <div class="stat"><div class="stat-label">جمع فروش ماه</div><div id="monthTotalSales" class="stat-value">۰</div></div>
+            <div class="stat"><div class="stat-label">جمع مصرف</div><div id="monthTotalConsumption" class="stat-value">۰</div></div>
+            <div class="stat"><div class="stat-label">جمع سود/زیان</div><div id="monthTotalProfit" class="stat-value">۰</div></div>
+          </div>
+        </div>
+        <div class="card">
+          <div class="card-title">جزئیات روزهای ماه</div>
+          <div class="table-wrap">
+            <table id="monthlyTable">
+              <thead>
+                <tr><th>تاریخ</th><th>فروش کل</th><th>مصرف</th><th>سود/زیان</th></tr>
+              </thead>
+              <tbody></tbody>
+            </table>
+          </div>
+          <div id="emptyMonthly" class="empty-state hidden">رکوردی برای این ماه وجود ندارد.</div>
+        </div>
+      </section>
+
+      <!-- Settings Tab -->
+      <section id="settingsTab" class="tab-content hidden">
+        <div class="card">
+          <div class="card-title">تنظیمات</div>
+          <div class="grid-2">
+            <div class="form-group">
+              <label for="tankCapacity">ظرفیت مخزن (لیتر)</label>
+              <input type="number" id="tankCapacity" min="0" step="1">
+            </div>
+            <div class="form-group">
+              <label for="tankerCapacity">ظرفیت تانکر (لیتر)</label>
+              <input type="number" id="tankerCapacity" min="0" step="1">
+            </div>
+            <div class="form-group">
+              <label for="tankerPrice">قیمت هر تانکر (ریال)</label>
+              <input type="number" id="tankerPrice" min="0" step="1">
+            </div>
+            <div class="form-group">
+              <label for="fuelCostPerLiter">هزینه سوخت هر لیتر (ریال)</label>
+              <input type="number" id="fuelCostPerLiter" min="0" step="1">
+            </div>
+          </div>
+          <div class="form-group">
+            <label class="toggle">
+              <input type="checkbox" id="darkModeToggle">
+              <span class="toggle-switch"></span>
+              <span>حالت تاریک</span>
+            </label>
+          </div>
+          <div class="btn-row">
+            <button id="saveSettingsBtn" class="btn btn-success">💾 ذخیره تنظیمات</button>
+            <button id="resetDataBtn" class="btn btn-danger">حذف تمام داده‌ها</button>
+          </div>
+        </div>
+      </section>
+    </main>
+  </div>
+
+  <!-- Delete Confirmation Modal -->
+  <div id="deleteModal" class="modal-overlay hidden">
+    <div class="modal">
+      <h3>حذف رکورد</h3>
+      <p>آیا از حذف این رکورد اطمینان دارید؟</p>
+      <div class="btn-row">
+        <button id="confirmDelete" class="btn btn-danger">حذف</button>
+        <button id="cancelDelete" class="btn btn-secondary">انصراف</button>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    /* ---------- Utility ---------- */
+    const $ = (id) => document.getElementById(id);
+    const toFa = (n) => String(n).replace(/\d/g, d => '۰۱۲۳۴۵۶۷۸۹'[d]);
+    const money = (n) => toFa(Number(n || 0).toLocaleString('en-US')) + ' ریال';
+    const num = (id) => Number($(id)?.value) || 0;
+    const todayKey = () => {
+      const d = new Date();
+      return `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`;
+    };
+
+    /* ---------- Jalali ---------- */
+    function gregorianToJalali(gy, gm, gd) {
+      const g_days_in_month = [31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31];
+      const j_days_in_month = [31, 31, 31, 31, 31, 31, 30, 30, 30, 30, 30, 29];
+      let jy, jm, jd, jday_no, i, j_np;
+      gy = parseInt(gy) - 1600;
+      gd = parseInt(gd) - 1;
+      gm = parseInt(gm) - 1;
+      let day_no = 365 * gy + parseInt((gy + 3) / 4) - parseInt((gy + 99) / 100) + parseInt((gy + 399) / 400);
+      for (i = 0; i < gm; ++i) day_no += g_days_in_month[i];
+      if (gm > 1 && ((gy % 4 === 0 && gy % 100 !== 0) || (gy % 400 === 0))) day_no += 1;
+      day_no += gd;
+      jday_no = day_no - 79;
+      j_np = parseInt(jday_no / 12053);
+      jday_no %= 12053;
+      jy = 979 + 33 * j_np + 4 * parseInt(jday_no / 1461);
+      jday_no %= 1461;
+      if (jday_no >= 366) {
+        jy += parseInt((jday_no - 1) / 365);
+        jday_no = (jday_no - 1) % 365;
+      }
+      for (i = 0; i < 11 && jday_no >= j_days_in_month[i]; ++i) {
+        jday_no -= j_days_in_month[i];
+      }
+      jm = i + 1;
+      jd = jday_no + 1;
+      return [jy, jm, jd];
+    }
+    function jalaliDateStr(date) {
+      const j = gregorianToJalali(date.getFullYear(), date.getMonth()+1, date.getDate());
+      const months = ['فروردین','اردیبهشت','خرداد','تیر','مرداد','شهریور','مهر','آبان','آذر','دی','بهمن','اسفند'];
+      return `${toFa(j[0])}/${toFa(String(j[1]).padStart(2,'0'))}/${toFa(String(j[2]).padStart(2,'0'))} ${months[j[1]-1]}`;
+    }
+    function jalaliMonthYear(date) {
+      const j = gregorianToJalali(date.getFullYear(), date.getMonth()+1, date.getDate());
+      const months = ['فروردین','اردیبهشت','خرداد','تیر','مرداد','شهریور','مهر','آبان','آذر','دی','بهمن','اسفند'];
+      return `${months[j[1]-1]} ${toFa(j[0])}`;
+    }
+    function toJalaliYM(dateStr) {
+      const [y,m] = dateStr.split('-').map(Number);
+      const j = gregorianToJalali(y,m,1);
+      const months = ['فروردین','اردیبهشت','خرداد','تیر','مرداد','شهریور','مهر','آبان','آذر','دی','بهمن','اسفند'];
+      return `${j[0]}-${j[1]}`;
+    }
+    function toJalaliLabel(ym) {
+      const [y,m] = ym.split('-').map(Number);
+      const months = ['فروردین','اردیبهشت','خرداد','تیر','مرداد','شهریور','مهر','آبان','آذر','دی','بهمن','اسفند'];
+      return `${months[m-1]} ${toFa(y)}`;
+    }
+
+    /* ---------- State ---------- */
+    const defaultSettings = {
+      tankCapacity: 92000,
+      tankerCapacity: 32000,
+      tankerPrice: 192000000,
+      fuelCostPerLiter: 6000
+    };
+    let settings = loadSettings();
+    let records = loadRecords();
+    let deleteTarget = null;
+
+    function loadSettings() {
+      try { return { ...defaultSettings, ...JSON.parse(localStorage.getItem('fs_settings') || '{}') }; }
+      catch { return { ...defaultSettings }; }
+    }
+    function saveSettingsObj() { localStorage.setItem('fs_settings', JSON.stringify(settings)); }
+    function loadRecords() {
+      try { return JSON.parse(localStorage.getItem('fs_records') || '[]'); }
+      catch { return []; }
+    }
+    function saveRecords() { localStorage.setItem('fs_records', JSON.stringify(records)); }
+
+    /* ---------- Auth ---------- */
+    function initAuth() {
+      if (localStorage.getItem('fs_session') === '1') { showApp(); }
+      $('loginForm').addEventListener('submit', (e) => {
+        e.preventDefault();
+        const u = $('username').value.trim();
+        const p = $('password').value;
+        if (u === 'admin' && p === '1234') {
+          localStorage.setItem('fs_session', '1');
+          $('loginError').classList.add('hidden');
+          showApp();
+        } else {
+          $('loginError').textContent = 'نام کاربری یا رمز عبور اشتباه است.';
+          $('loginError').classList.remove('hidden');
+        }
+      });
+      $('logoutBtn').addEventListener('click', () => {
+        localStorage.removeItem('fs_session');
+        location.reload();
+      });
+    }
+    function showApp() {
+      $('loginPage').classList.add('hidden');
+      $('appPage').classList.remove('hidden');
+      initApp();
+    }
+
+    /* ---------- Tabs ---------- */
+    function initTabs() {
+      document.querySelectorAll('.tab').forEach(tab => {
+        tab.addEventListener('click', () => {
+          document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+          document.querySelectorAll('.tab-content').forEach(c => c.classList.add('hidden'));
+          tab.classList.add('active');
+          $(tab.dataset.tab + 'Tab').classList.remove('hidden');
+          if (tab.dataset.tab === 'report') renderReport();
+          if (tab.dataset.tab === 'monthly') renderMonthly();
+        });
+      });
+    }
+
+    /* ---------- Input & Calculations ---------- */
+    function recalc() {
+      const startStock = num('monthStartStock');
+      const currentStock = num('currentStock');
+      const cardSales = num('cardSales');
+      const cashSales = num('cashSales');
+      const v15000 = num('vol15000');
+      const v30000 = num('vol30000');
+      const v100000 = num('vol100000');
+
+      const diff30000 = v30000 * 15000;
+      const diff100000 = v100000 * 85000;
+      const totalDiff = diff30000 + diff100000;
+      const totalSales = cardSales + cashSales;
+      const totalVolume = v15000 + v30000 + v100000;
+      const consumption = startStock - currentStock;
+      const difference = consumption - totalVolume;
+      const tankersNeeded = Math.max(0, Math.ceil(consumption / settings.tankerCapacity));
+      const tankerCost = tankersNeeded * settings.tankerPrice;
+      const profitLoss = totalSales - tankerCost;
+
+      $('diff30000').textContent = money(diff30000);
+      $('diff100000').textContent = money(diff100000);
+      $('totalDiff').textContent = money(totalDiff);
+      $('totalSales').textContent = money(totalSales);
+      $('totalVolume').textContent = toFa(totalVolume) + ' لیتر';
+      $('consumption').textContent = toFa(consumption) + ' لیتر';
+      $('difference').textContent = toFa(difference) + ' لیتر';
+      $('tankersNeeded').textContent = toFa(tankersNeeded);
+      $('tankerCost').textContent = money(tankerCost);
+      const pl = $('profitLoss');
+      pl.textContent = money(profitLoss);
+      pl.className = 'stat-value ' + (profitLoss >= 0 ? 'positive' : 'negative');
+
+      return { diff30000, diff100000, totalDiff, totalSales, totalVolume, consumption, difference, tankersNeeded, tankerCost, profitLoss };
+    }
+
+    function bindInputs() {
+      ['monthStartStock','currentStock','cardSales','cashSales','vol15000','vol30000','vol100000'].forEach(id => {
+        $(id).addEventListener('input', recalc);
+      });
+      $('saveDayBtn').addEventListener('click', saveDay);
+      $('clearInputBtn').addEventListener('click', clearInput);
+    }
+
+    function clearInput() {
+      ['monthStartStock','currentStock','cardSales','cashSales','vol15000','vol30000','vol100000'].forEach(id => { $(id).value = ''; });
+      recalc();
+    }
+
+    function saveDay() {
+      const calc = recalc();
+      const date = todayKey();
+      const record = {
+        id: Date.now(),
+        date,
+        monthStartStock: num('monthStartStock'),
+        currentStock: num('currentStock'),
+        cardSales: num('cardSales'),
+        cashSales: num('cashSales'),
+        vol15000: num('vol15000'),
+        vol30000: num('vol30000'),
+        vol100000: num('vol100000'),
+        ...calc
+      };
+      const idx = records.findIndex(r => r.date === date);
+      if (idx >= 0) { if (confirm('رکورد امروز قبلاً ثبت شده است. بازنویسی شود؟')) records[idx] = record; }
+      else records.push(record);
+      saveRecords();
+      alert('رکورد ذخیره شد.');
+    }
+
+    /* ---------- Report ---------- */
+    function renderReport() {
+      const tbody = $('reportTable').querySelector('tbody');
+      tbody.innerHTML = '';
+      if (!records.length) { $('emptyReport').classList.remove('hidden'); $('reportTable').classList.add('hidden'); return; }
+      $('emptyReport').classList.add('hidden'); $('reportTable').classList.remove('hidden');
+      const sorted = [...records].sort((a,b) => b.date.localeCompare(a.date));
+      sorted.forEach(r => {
+        const tr = document.createElement('tr');
+        tr.innerHTML = `
+          <td>${toFa(r.date)}</td>
+          <td>${money(r.totalSales)}</td>
+          <td>${toFa(r.totalVolume)}</td>
+          <td>${toFa(r.consumption)}</td>
+          <td>${toFa(r.difference)}</td>
+          <td class="${r.profitLoss >= 0 ? 'positive' : 'negative'}">${money(r.profitLoss)}</td>
+          <td><button data-id="${r.id}" class="btn btn-danger btn-sm delete-btn">حذف</button></td>
+        `;
+        tbody.appendChild(tr);
+      });
+      document.querySelectorAll('.delete-btn').forEach(b => b.addEventListener('click', () => { deleteTarget = Number(b.dataset.id); $('deleteModal').classList.remove('hidden'); }));
+    }
+
+    /* ---------- Monthly ---------- */
+    function renderMonthly() {
+      const sel = $('monthSelect');
+      sel.innerHTML = '';
+      const groups = {};
+      records.forEach(r => { const k = toJalaliYM(r.date); if (!groups[k]) groups[k] = []; groups[k].push(r); });
+      const keys = Object.keys(groups).sort((a,b) => b.localeCompare(a));
+      if (!keys.length) { sel.innerHTML = '<option value="">ندارد</option>'; return; }
+      keys.forEach(k => { const opt = document.createElement('option'); opt.value = k; opt.textContent = toJalaliLabel(k); sel.appendChild(opt); });
+      sel.addEventListener('change', updateMonthlyDetails);
+      updateMonthlyDetails();
+    }
+    function updateMonthlyDetails() {
+      const k = $('monthSelect').value;
+      const list = records.filter(r => toJalaliYM(r.date) === k);
+      const totalSales = list.reduce((s,r)=>s+r.totalSales,0);
+      const totalCons = list.reduce((s,r)=>s+r.consumption,0);
+      const totalProfit = list.reduce((s,r)=>s+r.profitLoss,0);
+      $('monthCount').textContent = toFa(list.length);
+      $('monthTotalSales').textContent = money(totalSales);
+      $('monthTotalConsumption').textContent = toFa(totalCons) + ' لیتر';
+      const mp = $('monthTotalProfit'); mp.textContent = money(totalProfit); mp.className = 'stat-value ' + (totalProfit >= 0 ? 'positive' : 'negative');
+
+      const tbody = $('monthlyTable').querySelector('tbody');
+      tbody.innerHTML = '';
+      if (!list.length) { $('emptyMonthly').classList.remove('hidden'); $('monthlyTable').classList.add('hidden'); return; }
+      $('emptyMonthly').classList.add('hidden'); $('monthlyTable').classList.remove('hidden');
+      list.sort((a,b)=>a.date.localeCompare(b.date)).forEach(r => {
+        const tr = document.createElement('tr');
+        tr.innerHTML = `<td>${toFa(r.date)}</td><td>${money(r.totalSales)}</td><td>${toFa(r.consumption)}</td><td class="${r.profitLoss>=0?'positive':'negative'}">${money(r.profitLoss)}</td>`;
+        tbody.appendChild(tr);
+      });
+    }
+
+    /* ---------- Settings ---------- */
+    function initSettings() {
+      $('tankCapacity').value = settings.tankCapacity;
+      $('tankerCapacity').value = settings.tankerCapacity;
+      $('tankerPrice').value = settings.tankerPrice;
+      $('fuelCostPerLiter').value = settings.fuelCostPerLiter;
+      $('darkModeToggle').checked = (localStorage.getItem('fs_theme') === 'dark');
+      $('saveSettingsBtn').addEventListener('click', () => {
+        settings.tankCapacity = num('tankCapacity') || defaultSettings.tankCapacity;
+        settings.tankerCapacity = num('tankerCapacity') || defaultSettings.tankerCapacity;
+        settings.tankerPrice = num('tankerPrice') || defaultSettings.tankerPrice;
+        settings.fuelCostPerLiter = num('fuelCostPerLiter') || defaultSettings.fuelCostPerLiter;
+        saveSettingsObj();
+        recalc();
+        alert('تنظیمات ذخیره شد.');
+      });
+      $('resetDataBtn').addEventListener('click', () => { if (confirm('تمام داده‌ها حذف شوند؟')) { records = []; saveRecords(); alert('داده‌ها حذف شدند.'); } });
+      $('darkModeToggle').addEventListener('change', toggleTheme);
+      $('themeBtn').addEventListener('click', () => { $('darkModeToggle').click(); });
+    }
+    function toggleTheme() {
+      const dark = $('darkModeToggle').checked;
+      localStorage.setItem('fs_theme', dark ? 'dark' : 'light');
+      document.documentElement.setAttribute('data-theme', dark ? 'dark' : 'light');
+    }
+
+    /* ---------- CSV ---------- */
+    function escapeCSV(v) { const s = String(v ?? ''); if (/[",\n\r]/.test(s)) return '"' + s.replace(/"/g, '""') + '"'; return s; }
+    function exportCSV() {
+      if (!records.length) return alert('رکوردی برای خروجی وجود ندارد.');
+      const headers = ['date','monthStartStock','currentStock','cardSales','cashSales','vol15000','vol30000','vol100000','diff30000','diff100000','totalDiff','totalSales','totalVolume','consumption','difference','tankersNeeded','tankerCost','profitLoss'];
+      let csv = '\uFEFF' + headers.map(h => ({date:'تاریخ',monthStartStock:'موجودی اول ماه',currentStock:'موجودی فعلی',cardSales:'فروش کارتخوان',cashSales:'فروش نقدی',vol15000:'حجم ۱۵۰۰۰',vol30000:'حجم ۳۰۰۰۰',vol100000:'حجم ۱۰۰۰۰۰',diff30000:'اختلاف ۳۰۰۰۰',diff100000:'اختلاف ۱۰۰۰۰۰',totalDiff:'جمع اختلاف',totalSales:'کل فروش',totalVolume:'حجم کل',consumption:'مصرف',difference:'اختلاف',tankersNeeded:'تانکر',tankerCost:'هزینه تانکر',profitLoss:'سود/زیان'}[h]||h)).join(',') + '\n';
+      records.forEach(r => { csv += headers.map(h => escapeCSV(r[h])).join(',') + '\n'; });
+      const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a'); a.href = url; a.download = `fuel-records-${todayKey()}.csv`; a.click(); URL.revokeObjectURL(url);
+    }
+    function importCSV(file) {
+      const reader = new FileReader();
+      reader.onload = (e) => {
+        const text = e.target.result.replace(/^\uFEFF/, '');
+        const lines = text.split('\n').filter(l => l.trim());
+        if (lines.length < 2) return alert('فایل CSV خالی یا نادرست است.');
+        const headers = lines[0].split(',').map(h => h.trim());
+        const newRecords = [];
+        for (let i = 1; i < lines.length; i++) {
+          const cols = lines[i].split(',');
+          const get = (name) => { const idx = headers.indexOf(name); return idx >= 0 ? Number(cols[idx]) || 0 : 0; };
+          const getStr = (name) => { const idx = headers.indexOf(name); return idx >= 0 ? (cols[idx] || '').trim() : ''; };
+          const date = getStr('date') || todayKey();
+          const r = {
+            id: Date.now() + i,
+            date,
+            monthStartStock: get('monthStartStock'),
+            currentStock: get('currentStock'),
+            cardSales: get('cardSales'),
+            cashSales: get('cashSales'),
+            vol15000: get('vol15000'),
+            vol30000: get('vol30000'),
+            vol100000: get('vol100000'),
+            diff30000: get('diff30000'),
+            diff100000: get('diff100000'),
+            totalDiff: get('totalDiff'),
+            totalSales: get('totalSales'),
+            totalVolume: get('totalVolume'),
+            consumption: get('consumption'),
+            difference: get('difference'),
+            tankersNeeded: get('tankersNeeded'),
+            tankerCost: get('tankerCost'),
+            profitLoss: get('profitLoss')
+          };
+          newRecords.push(r);
+        }
+        if (confirm(`${toFa(newRecords.length)} رکورد شناسایی شد. جایگزین شود؟`)) { records = newRecords; saveRecords(); renderReport(); alert('واردسازی انجام شد.'); }
+      };
+      reader.readAsText(file, 'UTF-8');
+    }
+
+    /* ---------- Clock ---------- */
+    function updateClock() {
+      const now = new Date();
+      $('liveClock').textContent = `${jalaliDateStr(now)} — ${toFa(now.toLocaleTimeString('fa-IR'))}`;
+    }
+
+    /* ---------- Init ---------- */
+    function initApp() {
+      $('inputDate').value = jalaliDateStr(new Date());
+      initTabs();
+      bindInputs();
+      initSettings();
+      recalc();
+      $('exportCsvBtn').addEventListener('click', exportCSV);
+      $('importCsvBtn').addEventListener('click', () => $('csvFile').click());
+      $('csvFile').addEventListener('change', (e) => { if (e.target.files[0]) importCSV(e.target.files[0]); });
+      $('confirmDelete').addEventListener('click', () => { records = records.filter(r => r.id !== deleteTarget); saveRecords(); deleteTarget = null; $('deleteModal').classList.add('hidden'); renderReport(); });
+      $('cancelDelete').addEventListener('click', () => { deleteTarget = null; $('deleteModal').classList.add('hidden'); });
+      setInterval(updateClock, 1000); updateClock();
+      const savedTheme = localStorage.getItem('fs_theme');
+      if (savedTheme === 'dark') { $('darkModeToggle').checked = true; document.documentElement.setAttribute('data-theme', 'dark'); }
+    }
+
+    /* ---------- Register SW ---------- */
+    if ('serviceWorker' in navigator) {
+      window.addEventListener('load', () => {
+        navigator.serviceWorker.register('service-worker.js').catch(() => {});
+      });
+    }
+
+    document.addEventListener('DOMContentLoaded', initAuth);
+  </script>
+</body>
+</html>

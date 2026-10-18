@@ -1,0 +1,57 @@
+{
+  "artifact_id": 10786,
+  "artifact_kind": "code_bundle",
+  "base_revision": 0,
+  "file_count": 3,
+  "files": [
+    {
+      "checksum": "fd42bf77a3210fe86c923390dcf2183215cd44f528362890b3c4263a0e8bb9eb",
+      "content_type": "text/markdown; charset=utf-8",
+      "derived_from": [],
+      "md5": "7e14f0cad3ad6a0b065dcf50c1f6621e",
+      "media_type": "text/markdown; charset=utf-8",
+      "path": "README.md",
+      "produced_by_plan_task": "code-agent",
+      "revision": 8,
+      "sha256": "fd42bf77a3210fe86c923390dcf2183215cd44f528362890b3c4263a0e8bb9eb",
+      "size": 3136
+    },
+    {
+      "checksum": "9b0f52d3fe0594dac6ba4c48627df9678f149b5dce89cdc9f3c39e60135c38e1",
+      "content_type": "text/html; charset=utf-8",
+      "derived_from": [],
+      "md5": "a9684023570c69a2d48468418866b13c",
+      "media_type": "text/html; charset=utf-8",
+      "path": "index.html",
+      "produced_by_plan_task": "code-agent",
+      "revision": 7,
+      "sha256": "9b0f52d3fe0594dac6ba4c48627df9678f149b5dce89cdc9f3c39e60135c38e1",
+      "size": 35264
+    },
+    {
+      "checksum": "b1043b352e9be748061d7c48c2febae83e6aae1e7fbc22c7a20b9dadd23c8871",
+      "content_type": "text/javascript; charset=utf-8",
+      "derived_from": [],
+      "md5": "4fea2047d0c2f8e7d329d223eb80ca75",
+      "media_type": "text/javascript; charset=utf-8",
+      "path": "service-worker.js",
+      "produced_by_plan_task": "code-agent",
+      "revision": 2,
+      "sha256": "b1043b352e9be748061d7c48c2febae83e6aae1e7fbc22c7a20b9dadd23c8871",
+      "size": 1152
+    }
+  ],
+  "key": {
+    "ssouid": "461600811",
+    "chat_id": "1071926",
+    "message_id": "1328483",
+    "run_id": "message-1328483"
+  },
+  "result_manifest_path": "sandbox/results/461600811/01M583TWMR58C9MD02PZZGKFA3/1071926/1328483/message-1328483/1792353681517161564/manifest.json",
+  "result_root": "sandbox/results/461600811/01M583TWMR58C9MD02PZZGKFA3/1071926/1328483/message-1328483/1792353681517161564",
+  "revision": 1,
+  "sandbox_id": "01M583TWMR58C9MD02PZZGKFA3",
+  "total_bytes": 39552,
+  "work_id": 9396,
+  "workspace": "chats/chat-1071926/messages/message-1328483"
+}
