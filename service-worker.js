@@ -1,4 +1,4 @@
-const CACHE_NAME = 'gas-station-v2';
+const CACHE_NAME = 'gas-station-v3';
 const urlsToCache = ['index.html', 'manifest.json', 'icon.svg'];
 self.addEventListener('install', event => {
   event.waitUntil(caches.open(CACHE_NAME).then(cache => cache.addAll(urlsToCache)));
