@@ -28,7 +28,6 @@ input:disabled{background:var(--bg);color:var(--text2);cursor:not-allowed}
 .btn-blue{background:var(--blue);color:#fff}
 .btn-red{background:var(--red);color:#fff}
 .btn-gray{background:#666;color:#fff}
-.btn-orange{background:var(--orange);color:#fff}
 .btn:hover{opacity:.85}
 .result{background:var(--bg);border-radius:8px;padding:12px;margin:8px 0}
 .result-row{display:flex;justify-content:space-between;align-items:center;padding:5px 0;border-bottom:1px solid var(--border);font-size:.88em}
@@ -63,7 +62,6 @@ input:disabled{background:var(--bg);color:var(--text2);cursor:not-allowed}
 <body>
 <button class="theme-toggle" onclick="toggleTheme()">🌙</button>
 
-<!-- صفحه ورود -->
 <div id="loginPage" class="container">
 <div class="card login-box">
 <h1>⛽ مدیریت جایگاه سوخت</h1>
@@ -76,7 +74,6 @@ input:disabled{background:var(--bg);color:var(--text2);cursor:not-allowed}
 </div>
 </div>
 
-<!-- صفحه اصلی -->
 <div id="mainPage" class="container hidden">
 <div class="card">
 <h1>⛽ مدیریت جایگاه سوخت</h1>
@@ -92,36 +89,25 @@ input:disabled{background:var(--bg);color:var(--text2);cursor:not-allowed}
 <div class="tab" onclick="showTab('settings')">⚙️</div>
 </div>
 
-<!-- تب ثبت فروش -->
 <div id="tabSales">
 <div class="card">
 <h2>📝 ثبت فروش روزانه</h2>
-
 <label>موجودی اول دوره (لیتر)</label>
 <input type="number" id="startPeriod" placeholder="فقط در اولین ثبت قابل ویرایش">
-
 <label>بار رسیده (لیتر)</label>
 <input type="number" id="arrived" placeholder="مقدار بار ورودی" oninput="autoCalc()">
-
 <label>آزمایش (لیتر)</label>
 <input type="number" id="test" placeholder="مقدار آزمایش" oninput="autoCalc()">
-
 <h3 style="margin-top:12px;color:var(--green)">📤 خروجی‌ها (فروش)</h3>
-
 <label>فروش نرخ ۱۵٬۰۰۰ ریالی (لیتر)</label>
 <input type="number" id="vol15" placeholder="0" oninput="autoCalc()">
-
 <label>فروش نرخ ۳۰٬۰۰۰ ریالی (لیتر)</label>
 <input type="number" id="vol30" placeholder="0" oninput="autoCalc()">
-
 <label>فروش نرخ ۱۰۰٬۰۰۰ ریالی (لیتر)</label>
 <input type="number" id="vol100" placeholder="0" oninput="autoCalc()">
-
 <label style="margin-top:12px">موجودی آخر دوره / موجودی روز (لیتر)</label>
 <input type="number" id="endStock" placeholder="موجودی مخزن در پایان روز" oninput="autoCalc()">
-
 <div id="calcResult" class="result hidden"></div>
-
 <div style="display:flex;gap:6px;margin-top:10px">
 <button class="btn btn-green" onclick="saveRecord()" style="flex:1">💾 ذخیره</button>
 <button class="btn btn-gray" onclick="clearForm()" style="flex:1">🗑 پاک کردن</button>
@@ -129,7 +115,6 @@ input:disabled{background:var(--bg);color:var(--text2);cursor:not-allowed}
 </div>
 </div>
 
-<!-- تب گزارشات -->
 <div id="tabReports" class="hidden">
 <div class="card">
 <h2>📊 گزارشات</h2>
@@ -139,22 +124,9 @@ input:disabled{background:var(--bg);color:var(--text2);cursor:not-allowed}
 <div class="tab" onclick="showReport('monthly')">ماهانه</div>
 </div>
 </div>
-
-<div id="reportDaily" class="card">
-<h2>📋 گزارش روزانه</h2>
-<div id="dailyList"></div>
-</div>
-
-<div id="reportDecade" class="card hidden">
-<h2>📅 گزارش دهه‌ای</h2>
-<div id="decadeList"></div>
-</div>
-
-<div id="reportMonthly" class="card hidden">
-<h2>📆 گزارش ماهانه</h2>
-<div id="monthlyList"></div>
-</div>
-
+<div id="reportDaily" class="card"><h2>📋 گزارش روزانه</h2><div id="dailyList"></div></div>
+<div id="reportDecade" class="card hidden"><h2>📅 گزارش دهه‌ای</h2><div id="decadeList"></div></div>
+<div id="reportMonthly" class="card hidden"><h2>📆 گزارش ماهانه</h2><div id="monthlyList"></div></div>
 <div class="card">
 <button class="btn btn-blue" onclick="exportCSV()">📤 خروجی CSV (اکسل)</button>
 <button class="btn btn-gray" onclick="document.getElementById('importCSV').click()">📥 ورود CSV</button>
@@ -162,7 +134,6 @@ input:disabled{background:var(--bg);color:var(--text2);cursor:not-allowed}
 </div>
 </div>
 
-<!-- تب تنظیمات -->
 <div id="tabSettings" class="hidden">
 <div class="card">
 <h2>🔐 تغییر رمز عبور</h2>
@@ -180,24 +151,10 @@ input:disabled{background:var(--bg);color:var(--text2);cursor:not-allowed}
 </div>
 
 <script>
-// داده‌ها
-let credentials = JSON.parse(localStorage.getItem('credentials')) || {user:'admin', pass:'1234'};
-let records = JSON.parse(localStorage.getItem('records')) || [];
+let credentials=JSON.parse(localStorage.getItem('credentials'))||{user:'admin',pass:'1234'};
+let records=JSON.parse(localStorage.getItem('records'))||[];
 
-// تاریخ شمسی
-function toJalali(gy,gm,gd){
-  var g_d_m=[0,31,59,90,120,151,181,212,243,273,304,334];
-  var jy=(gy<=1600)?0:979;
-  gy=(gy<=1600)?gy-621:gy-1600;
-  var gy2=(gm>2)?(gy+1):gy;
-  var days=(365*gy)+(parseInt((gy2+3)/4))-(parseInt((gy2+99)/100))+(parseInt((gy2+399)/400))-80+gd+g_d_m[gm-1];
-  jy+=33*(parseInt(days/12053));days%=12053;
-  jy+=4*(parseInt(days/1461));days%=1461;
-  if(days>365){jy+=parseInt((days-1)/365);days=(days-1)%365}
-  var jm=(days<186)?1+parseInt(days/31):7+parseInt((days-186)/30);
-  var jd=1+((days<186)?(days%31):((days-186)%30));
-  return[jy,jm,jd];
-}
+function toJalali(gy,gm,gd){var g_d_m=[0,31,59,90,120,151,181,212,243,273,304,334];var jy=(gy<=1600)?0:979;gy=(gy<=1600)?gy-621:gy-1600;var gy2=(gm>2)?(gy+1):gy;var days=(365*gy)+(parseInt((gy2+3)/4))-(parseInt((gy2+99)/100))+(parseInt((gy2+399)/400))-80+gd+g_d_m[gm-1];jy+=33*(parseInt(days/12053));days%=12053;jy+=4*(parseInt(days/1461));days%=1461;if(days>365){jy+=parseInt((days-1)/365);days=(days-1)%365}var jm=(days<186)?1+parseInt(days/31):7+parseInt((days-186)/30);var jd=1+((days<186)?(days%31):((days-186)%30));return[jy,jm,jd]}
 function getJalaliDate(){var d=new Date();return toJalali(d.getFullYear(),d.getMonth()+1,d.getDate())}
 function getDayName(){var days=['یکشنبه','دوشنبه','سه‌شنبه','چهارشنبه','پنجشنبه','جمعه','شنبه'];return days[new Date().getDay()]}
 function toPersianNum(n){return n.toString().replace(/\d/g,d=>'۰۱۲۳۴۵۶۷۸۹'[d])}
@@ -212,264 +169,146 @@ function updateDateTime(){
 setInterval(updateDateTime,1000);
 updateDateTime();
 
-// احراز هویت
 function login(){
   var u=document.getElementById('loginUser').value;
   var p=document.getElementById('loginPass').value;
-  if(u===credentials.user && p===credentials.pass){
+  if(u===credentials.user&&p===credentials.pass){
     document.getElementById('loginPage').classList.add('hidden');
     document.getElementById('mainPage').classList.remove('hidden');
     initForm();
-  } else {
-    document.getElementById('loginError').textContent='نام کاربری یا رمز عبور اشتباه است';
-  }
+  }else{document.getElementById('loginError').textContent='نام کاربری یا رمز عبور اشتباه است'}
 }
 function logout(){
   document.getElementById('mainPage').classList.add('hidden');
   document.getElementById('loginPage').classList.remove('hidden');
 }
 
-// مقداردهی اولیه فرم
 function initForm(){
-  var startEl=document.getElementById('startPeriod');
-  if(records.length===0){
-    startEl.disabled=false;
-    startEl.value='';
-    startEl.placeholder='موجودی اول دوره را وارد کنید';
-  } else {
-    var lastRecord=records[records.length-1];
-    startEl.value=lastRecord.endStock;
-    startEl.disabled=true;
-    startEl.placeholder='خودکار از رکورد قبلی';
-  }
+  var el=document.getElementById('startPeriod');
+  if(records.length===0){el.disabled=false;el.value='';el.placeholder='موجودی اول دوره را وارد کنید'}
+  else{el.value=records[records.length-1].endStock;el.disabled=true;el.placeholder='خودکار از رکورد قبلی'}
 }
 
-// تب‌ها
 function showTab(tab){
   document.querySelectorAll('.tab').forEach(t=>t.classList.remove('active'));
   document.getElementById('tabSales').classList.add('hidden');
   document.getElementById('tabReports').classList.add('hidden');
   document.getElementById('tabSettings').classList.add('hidden');
-  if(tab==='sales'){
-    document.getElementById('tabSales').classList.remove('hidden');
-    document.querySelectorAll('.tab')<i class="markdown-ref custom">0</i>.classList.add('active');
-    initForm();
-  }
-  if(tab==='reports'){
-    document.getElementById('tabReports').classList.remove('hidden');
-    document.querySelectorAll('.tab')<i class="markdown-ref custom">1</i>.classList.add('active');
-    showReport('daily');
-  }
-  if(tab==='settings'){
-    document.getElementById('tabSettings').classList.remove('hidden');
-    document.querySelectorAll('.tab')<i class="markdown-ref custom">2</i>.classList.add('active');
-  }
+  if(tab==='sales'){document.getElementById('tabSales').classList.remove('hidden');document.querySelectorAll('.tab')<i class="markdown-ref custom">0</i>.classList.add('active');initForm()}
+  if(tab==='reports'){document.getElementById('tabReports').classList.remove('hidden');document.querySelectorAll('.tab')<i class="markdown-ref custom">1</i>.classList.add('active');showReport('daily')}
+  if(tab==='settings'){document.getElementById('tabSettings').classList.remove('hidden');document.querySelectorAll('.tab')<i class="markdown-ref custom">2</i>.classList.add('active')}
 }
 
-// محاسبات خودکار
 function autoCalc(){
-  var startPeriod=parseFloat(document.getElementById('startPeriod').value)||0;
-  var arrived=parseFloat(document.getElementById('arrived').value)||0;
-  var test=parseFloat(document.getElementById('test').value)||0;
+  var sp=parseFloat(document.getElementById('startPeriod').value)||0;
+  var ar=parseFloat(document.getElementById('arrived').value)||0;
+  var te=parseFloat(document.getElementById('test').value)||0;
   var v15=parseFloat(document.getElementById('vol15').value)||0;
   var v30=parseFloat(document.getElementById('vol30').value)||0;
   var v100=parseFloat(document.getElementById('vol100').value)||0;
-  var endStock=parseFloat(document.getElementById('endStock').value)||0;
-
-  var totalVol=v15+v30+v100;
-  var totalRial=(v15*15000)+(v30*30000)+(v100*100000);
-  var diff30=v30*15000;
-  var diff100=v100*85000;
-  var totalDiff=diff30+diff100;
-  var kasri=startPeriod+arrived+test-totalVol-endStock;
-
-  var kasriClass='neutral';
-  var kasriLabel='تراز';
-  if(kasri>0){kasriClass='loss';kasriLabel='کسری'}
-  else if(kasri<0){kasriClass='profit';kasriLabel='اضافه'}
-
-  var html='';
-  html+='<div class="result-row"><span class="label">فروش کل (لیتر)</span><span class="value">'+formatNum(totalVol)+' لیتر</span></div>';
-  html+='<div class="result-row"><span class="label">فروش کل (ریال)</span><span class="value">'+formatNum(totalRial)+' ریال</span></div>';
-  html+='<div class="result-row"><span class="label">مابه‌التفاوت نرخ ۳۰٬۰۰۰</span><span class="value">'+formatNum(diff30)+' ریال</span></div>';
-  html+='<div class="result-row"><span class="label">مابه‌التفاوت نرخ ۱۰۰٬۰۰۰</span><span class="value">'+formatNum(diff100)+' ریال</span></div>';
-  html+='<div class="result-row"><span class="label">جمع مابه‌التفاوت‌ها</span><span class="value">'+formatNum(totalDiff)+' ریال</span></div>';
-  html+='<div class="result-row"><span class="label">کسری / اضافه</span><span class="value '+kasriClass+'">'+formatNum(Math.abs(kasri))+' لیتر ('+kasriLabel+')</span></div>';
-
-  document.getElementById('calcResult').innerHTML=html;
+  var es=parseFloat(document.getElementById('endStock').value)||0;
+  var tv=v15+v30+v100;
+  var tr=(v15*15000)+(v30*30000)+(v100*100000);
+  var d30=v30*15000;
+  var d100=v100*85000;
+  var td=d30+d100;
+  var k=sp+ar+te-tv-es;
+  var kc='neutral',kl='تراز';
+  if(k>0){kc='loss';kl='کسری'}else if(k<0){kc='profit';kl='اضافه'}
+  var h='';
+  h+='<div class="result-row"><span class="label">فروش کل (لیتر)</span><span class="value">'+formatNum(tv)+' لیتر</span></div>';
+  h+='<div class="result-row"><span class="label">فروش کل (ریال)</span><span class="value">'+formatNum(tr)+' ریال</span></div>';
+  h+='<div class="result-row"><span class="label">مابه‌التفاوت نرخ ۳۰٬۰۰۰</span><span class="value">'+formatNum(d30)+' ریال</span></div>';
+  h+='<div class="result-row"><span class="label">مابه‌التفاوت نرخ ۱۰۰٬۰۰۰</span><span class="value">'+formatNum(d100)+' ریال</span></div>';
+  h+='<div class="result-row"><span class="label">جمع مابه‌التفاوت‌ها</span><span class="value">'+formatNum(td)+' ریال</span></div>';
+  h+='<div class="result-row"><span class="label">کسری / اضافه</span><span class="value '+kc+'">'+formatNum(Math.abs(k))+' لیتر ('+kl+')</span></div>';
+  document.getElementById('calcResult').innerHTML=h;
   document.getElementById('calcResult').classList.remove('hidden');
-
-  window._lastCalc={
-    date:getJalaliDate().join('/'),
-    dateKey:getJalaliDate()<i class="markdown-ref custom">0</i>*10000+getJalaliDate()<i class="markdown-ref custom">1</i>*100+getJalaliDate()<i class="markdown-ref custom">2</i>,
-    startPeriod:parseFloat(document.getElementById('startPeriod').value)||0,
-    arrived:arrived,
-    test:test,
-    vol15:v15,
-    vol30:v30,
-    vol100:v100,
-    totalVol:totalVol,
-    totalRial:totalRial,
-    diff30:diff30,
-    diff100:diff100,
-    totalDiff:totalDiff,
-    endStock:endStock,
-    kasri:kasri
-  };
+  window._lastCalc={date:getJalaliDate().join('/'),startPeriod:sp,arrived:ar,test:te,vol15:v15,vol30:v30,vol100:v100,totalVol:tv,totalRial:tr,diff30:d30,diff100:d100,totalDiff:td,endStock:es,kasri:k};
 }
 
-// ذخیره رکورد
 function saveRecord(){
   if(!window._lastCalc){alert('لطفاً ابتدا مقادیر را وارد کنید');return}
   if(window._lastCalc.endStock===0){alert('موجودی آخر دوره را وارد کنید');return}
   records.push(window._lastCalc);
   localStorage.setItem('records',JSON.stringify(records));
   alert('✅ رکورد ذخیره شد');
-  clearForm();
-  initForm();
+  clearForm();initForm();
 }
 
 function clearForm(){
-  document.getElementById('arrived').value='';
-  document.getElementById('test').value='';
-  document.getElementById('vol15').value='';
-  document.getElementById('vol30').value='';
-  document.getElementById('vol100').value='';
-  document.getElementById('endStock').value='';
+  ['arrived','test','vol15','vol30','vol100','endStock'].forEach(id=>document.getElementById(id).value='');
   document.getElementById('calcResult').classList.add('hidden');
   window._lastCalc=null;
 }
 
-// گزارشات
 function showReport(type){
   document.querySelectorAll('#tabReports .tab').forEach(t=>t.classList.remove('active'));
   document.getElementById('reportDaily').classList.add('hidden');
   document.getElementById('reportDecade').classList.add('hidden');
   document.getElementById('reportMonthly').classList.add('hidden');
-
-  if(type==='daily'){
-    document.getElementById('reportDaily').classList.remove('hidden');
-    document.querySelectorAll('#tabReports .tab')<i class="markdown-ref custom">0</i>.classList.add('active');
-    renderDaily();
-  }
-  if(type==='decade'){
-    document.getElementById('reportDecade').classList.remove('hidden');
-    document.querySelectorAll('#tabReports .tab')<i class="markdown-ref custom">1</i>.classList.add('active');
-    renderDecade();
-  }
-  if(type==='monthly'){
-    document.getElementById('reportMonthly').classList.remove('hidden');
-    document.querySelectorAll('#tabReports .tab')<i class="markdown-ref custom">2</i>.classList.add('active');
-    renderMonthly();
-  }
+  if(type==='daily'){document.getElementById('reportDaily').classList.remove('hidden');document.querySelectorAll('#tabReports .tab')<i class="markdown-ref custom">0</i>.classList.add('active');renderDaily()}
+  if(type==='decade'){document.getElementById('reportDecade').classList.remove('hidden');document.querySelectorAll('#tabReports .tab')<i class="markdown-ref custom">1</i>.classList.add('active');renderDecade()}
+  if(type==='monthly'){document.getElementById('reportMonthly').classList.remove('hidden');document.querySelectorAll('#tabReports .tab')<i class="markdown-ref custom">2</i>.classList.add('active');renderMonthly()}
 }
 
 function renderDaily(){
-  var html='';
-  if(records.length===0){html='<p style="text-align:center;color:var(--text2)">رکوردی وجود ندارد</p>'}
-  else{
-    records.slice().reverse().forEach((r,idx)=>{
-      var i=records.length-1-idx;
-      var kasriBadge='';
-      if(r.kasri>0) kasriBadge='<span class="badge badge-red">کسری '+formatNum(r.kasri)+'</span>';
-      else if(r.kasri<0) kasriBadge='<span class="badge badge-green">اضافه '+formatNum(Math.abs(r.kasri))+'</span>';
-      else kasriBadge='<span class="badge badge-blue">تراز</span>';
-      html+='<div class="report-item">';
-      html+='<div class="date">📅 '+toPersianNum(r.date)+' '+kasriBadge+'</div>';
-      html+='<div class="row"><span>موجودی اول دوره:</span><span>'+formatNum(r.startPeriod)+' لیتر</span></div>';
-      html+='<div class="row"><span>بار رسیده:</span><span>'+formatNum(r.arrived)+' لیتر</span></div>';
-      html+='<div class="row"><span>آزمایش:</span><span>'+formatNum(r.test)+' لیتر</span></div>';
-      html+='<div class="row"><span>فروش کل:</span><span>'+formatNum(r.totalVol)+' لیتر</span></div>';
-      html+='<div class="row"><span>مابه‌التفاوت:</span><span>'+formatNum(r.totalDiff)+' ریال</span></div>';
-      html+='<div class="row"><span>موجودی آخر:</span><span>'+formatNum(r.endStock)+' لیتر</span></div>';
-      html+='<button class="btn btn-red" style="margin-top:6px;padding:6px;font-size:.8em" onclick="deleteRecord('+i+')">🗑 حذف</button>';
-      html+='</div>';
-    });
-  }
-  document.getElementById('dailyList').innerHTML=html;
+  var h='';
+  if(records.length===0){h='<p style="text-align:center;color:var(--text2)">رکوردی وجود ندارد</p>'}
+  else{records.slice().reverse().forEach((r,idx)=>{var i=records.length-1-idx;var b='';if(r.kasri>0)b='<span class="badge badge-red">کسری '+formatNum(r.kasri)+'</span>';else if(r.kasri<0)b='<span class="badge badge-green">اضافه '+formatNum(Math.abs(r.kasri))+'</span>';else b='<span class="badge badge-blue">تراز</span>';h+='<div class="report-item"><div class="date">📅 '+toPersianNum(r.date)+' '+b+'</div><div class="row"><span>موجودی اول:</span><span>'+formatNum(r.startPeriod)+' لیتر</span></div><div class="row"><span>بار رسیده:</span><span>'+formatNum(r.arrived)+' لیتر</span></div><div class="row"><span>آزمایش:</span><span>'+formatNum(r.test)+' لیتر</span></div><div class="row"><span>فروش کل:</span><span>'+formatNum(r.totalVol)+' لیتر</span></div><div class="row"><span>مابه‌التفاوت:</span><span>'+formatNum(r.totalDiff)+' ریال</span></div><div class="row"><span>موجودی آخر:</span><span>'+formatNum(r.endStock)+' لیتر</span></div><button class="btn btn-red" style="margin-top:6px;padding:6px;font-size:.8em" onclick="deleteRecord('+i+')">🗑 حذف</button></div>'})}
+  document.getElementById('dailyList').innerHTML=h;
 }
 
 function renderDecade(){
-  if(records.length===0){
-    document.getElementById('decadeList').innerHTML='<p style="text-align:center;color:var(--text2)">رکوردی وجود ندارد</p>';
-    return;
-  }
-  var currentMonth=getJalaliDate()<i class="markdown-ref custom">1</i>;
-  var decade1=[],decade2=[],decade3=[];
-
-  records.forEach(r=>{
-    var parts=r.date.split('/');
-    var day=parseInt(parts<i class="markdown-ref custom">2</i>);
-    if(day>=1 && day<=10) decade1.push(r);
-    else if(day>=11 && day<=20) decade2.push(r);
-    else if(day>=21) decade3.push(r);
-  });
-
-  var html='';
-  html+=renderDecadeCard('دهه اول (۱ تا ۱۰)',decade1);
-  html+=renderDecadeCard('دهه دوم (۱۱ تا ۲۰)',decade2);
-  html+=renderDecadeCard('دهه سوم (۲۱ تا پایان)',decade3);
-  document.getElementById('decadeList').innerHTML=html;
+  if(records.length===0){document.getElementById('decadeList').innerHTML='<p style="text-align:center;color:var(--text2)">رکوردی وجود ندارد</p>';return}
+  var d1=[],d2=[],d3=[];
+  records.forEach(r=>{var day=parseInt(r.date.split('/')<i class="markdown-ref custom">2</i>);if(day>=1&&day<=10)d1.push(r);else if(day>=11&&day<=20)d2.push(r);else if(day>=21)d3.push(r)});
+  var h='';
+  h+=renderDecadeCard('دهه اول (۱ تا ۱۰)',d1);
+  h+=renderDecadeCard('دهه دوم (۱۱ تا ۲۰)',d2);
+  h+=renderDecadeCard('دهه سوم (۲۱ تا پایان)',d3);
+  document.getElementById('decadeList').innerHTML=h;
 }
 
 function renderDecadeCard(title,arr){
-  var sumArrived=0,sumTest=0,sumVol=0,sumRial=0,sumDiff=0,sumKasri=0;
-  arr.forEach(r=>{sumArrived+=r.arrived;sumTest+=r.test;sumVol+=r.totalVol;sumRial+=r.totalRial;sumDiff+=r.totalDiff;sumKasri+=r.kasri});
-  var kasriClass=sumKasri>0?'loss':(sumKasri<0?'profit':'neutral');
-  var kasriLabel=sumKasri>0?'کسری':(sumKasri<0?'اضافه':'تراز');
-
-  var html='<div class="decade-card">';
-  html+='<h3>📅 '+title+' <span style="font-size:.8em;color:var(--text2)">('+toPersianNum(arr.length)+' رکورد)</span></h3>';
-  html+='<div class="result">';
-  html+='<div class="result-row"><span class="label">جمع بار رسیده</span><span class="value">'+formatNum(sumArrived)+' لیتر</span></div>';
-  html+='<div class="result-row"><span class="label">جمع آزمایش</span><span class="value">'+formatNum(sumTest)+' لیتر</span></div>';
-  html+='<div class="result-row"><span class="label">جمع فروش</span><span class="value">'+formatNum(sumVol)+' لیتر</span></div>';
-  html+='<div class="result-row"><span class="label">جمع فروش (ریال)</span><span class="value">'+formatNum(sumRial)+' ریال</span></div>';
-  html+='<div class="result-row"><span class="label">جمع مابه‌التفاوت</span><span class="value">'+formatNum(sumDiff)+' ریال</span></div>';
-  html+='<div class="result-row"><span class="label">کسری / اضافه</span><span class="value '+kasriClass+'">'+formatNum(Math.abs(sumKasri))+' لیتر ('+kasriLabel+')</span></div>';
-  html+='</div></div>';
-  return html;
+  var sa=0,st=0,sv=0,sr=0,sd=0,sk=0;
+  arr.forEach(r=>{sa+=r.arrived;st+=r.test;sv+=r.totalVol;sr+=r.totalRial;sd+=r.totalDiff;sk+=r.kasri});
+  var kc=sk>0?'loss':(sk<0?'profit':'neutral');
+  var kl=sk>0?'کسری':(sk<0?'اضافه':'تراز');
+  var h='<div class="decade-card"><h3>📅 '+title+' <span style="font-size:.8em;color:var(--text2)">('+toPersianNum(arr.length)+' رکورد)</span></h3><div class="result">';
+  h+='<div class="result-row"><span class="label">جمع بار رسیده</span><span class="value">'+formatNum(sa)+' لیتر</span></div>';
+  h+='<div class="result-row"><span class="label">جمع آزمایش</span><span class="value">'+formatNum(st)+' لیتر</span></div>';
+  h+='<div class="result-row"><span class="label">جمع فروش</span><span class="value">'+formatNum(sv)+' لیتر</span></div>';
+  h+='<div class="result-row"><span class="label">جمع فروش (ریال)</span><span class="value">'+formatNum(sr)+' ریال</span></div>';
+  h+='<div class="result-row"><span class="label">جمع مابه‌التفاوت</span><span class="value">'+formatNum(sd)+' ریال</span></div>';
+  h+='<div class="result-row"><span class="label">کسری / اضافه</span><span class="value '+kc+'">'+formatNum(Math.abs(sk))+' لیتر ('+kl+')</span></div>';
+  h+='</div></div>';return h;
 }
 
 function renderMonthly(){
-  if(records.length===0){
-    document.getElementById('monthlyList').innerHTML='<p style="text-align:center;color:var(--text2)">رکوردی وجود ندارد</p>';
-    return;
-  }
-  var sumArrived=0,sumTest=0,sumVol=0,sumRial=0,sumDiff=0,sumKasri=0;
-  records.forEach(r=>{sumArrived+=r.arrived;sumTest+=r.test;sumVol+=r.totalVol;sumRial+=r.totalRial;sumDiff+=r.totalDiff;sumKasri+=r.kasri});
-  var kasriClass=sumKasri>0?'loss':(sumKasri<0?'profit':'neutral');
-  var kasriLabel=sumKasri>0?'کسری':(sumKasri<0?'اضافه':'تراز');
-
-  var html='<div class="monthly-card">';
-  html+='<h3>📆 گزارش ماهانه <span style="font-size:.8em;color:var(--text2)">('+toPersianNum(records.length)+' رکورد)</span></h3>';
-  html+='<div class="result">';
-  html+='<div class="result-row"><span class="label">جمع بار رسیده</span><span class="value">'+formatNum(sumArrived)+' لیتر</span></div>';
-  html+='<div class="result-row"><span class="label">جمع آزمایش</span><span class="value">'+formatNum(sumTest)+' لیتر</span></div>';
-  html+='<div class="result-row"><span class="label">جمع فروش (لیتر)</span><span class="value">'+formatNum(sumVol)+' لیتر</span></div>';
-  html+='<div class="result-row"><span class="label">جمع فروش (ریال)</span><span class="value">'+formatNum(sumRial)+' ریال</span></div>';
-  html+='<div class="result-row"><span class="label">جمع مابه‌التفاوت</span><span class="value">'+formatNum(sumDiff)+' ریال</span></div>';
-  html+='<div class="result-row"><span class="label">کسری / اضافه کل</span><span class="value '+kasriClass+'">'+formatNum(Math.abs(sumKasri))+' لیتر ('+kasriLabel+')</span></div>';
-  html+='</div></div>';
-  document.getElementById('monthlyList').innerHTML=html;
+  if(records.length===0){document.getElementById('monthlyList').innerHTML='<p style="text-align:center;color:var(--text2)">رکوردی وجود ندارد</p>';return}
+  var sa=0,st=0,sv=0,sr=0,sd=0,sk=0;
+  records.forEach(r=>{sa+=r.arrived;st+=r.test;sv+=r.totalVol;sr+=r.totalRial;sd+=r.totalDiff;sk+=r.kasri});
+  var kc=sk>0?'loss':(sk<0?'profit':'neutral');
+  var kl=sk>0?'کسری':(sk<0?'اضافه':'تراز');
+  var h='<div class="monthly-card"><h3>📆 گزارش ماهانه <span style="font-size:.8em;color:var(--text2)">('+toPersianNum(records.length)+' رکورد)</span></h3><div class="result">';
+  h+='<div class="result-row"><span class="label">جمع بار رسیده</span><span class="value">'+formatNum(sa)+' لیتر</span></div>';
+  h+='<div class="result-row"><span class="label">جمع آزمایش</span><span class="value">'+formatNum(st)+' لیتر</span></div>';
+  h+='<div class="result-row"><span class="label">جمع فروش (لیتر)</span><span class="value">'+formatNum(sv)+' لیتر</span></div>';
+  h+='<div class="result-row"><span class="label">جمع فروش (ریال)</span><span class="value">'+formatNum(sr)+' ریال</span></div>';
+  h+='<div class="result-row"><span class="label">جمع مابه‌التفاوت</span><span class="value">'+formatNum(sd)+' ریال</span></div>';
+  h+='<div class="result-row"><span class="label">کسری / اضافه کل</span><span class="value '+kc+'">'+formatNum(Math.abs(sk))+' لیتر ('+kl+')</span></div>';
+  h+='</div></div>';
+  document.getElementById('monthlyList').innerHTML=h;
 }
 
-function deleteRecord(i){
-  if(confirm('حذف این رکورد؟')){
-    records.splice(i,1);
-    localStorage.setItem('records',JSON.stringify(records));
-    renderDaily();
-  }
-}
+function deleteRecord(i){if(confirm('حذف این رکورد؟')){records.splice(i,1);localStorage.setItem('records',JSON.stringify(records));renderDaily()}}
 
-// CSV
 function exportCSV(){
-  if(records.length===0){alert('رکوردی برای خروجی وجود ندارد');return}
+  if(records.length===0){alert('رکوردی وجود ندارد');return}
   var bom='\uFEFF';
-  var csv=bom+'تاریخ,موجودی اول دوره,بار رسیده,آزمایش,فروش 15000,فروش 30000,فروش 100000,فروش کل (لیتر),فروش کل (ریال),مابه التفاوت 30000,مابه التفاوت 100000,جمع مابه التفاوت,موجودی آخر دوره,کسری/اضافه\n';
-  records.forEach(r=>{
-    csv+=r.date+','+r.startPeriod+','+r.arrived+','+r.test+','+r.vol15+','+r.vol30+','+r.vol100+','+r.totalVol+','+r.totalRial+','+r.diff30+','+r.diff100+','+r.totalDiff+','+r.endStock+','+r.kasri+'\n';
-  });
+  var csv=bom+'تاریخ,موجودی اول دوره,بار رسیده,آزمایش,فروش 15000,فروش 30000,فروش 100000,فروش کل لیتر,فروش کل ریال,مابه التفاوت 30000,مابه التفاوت 100000,جمع مابه التفاوت,موجودی آخر,کسری اضافه\n';
+  records.forEach(r=>{csv+=r.date+','+r.startPeriod+','+r.arrived+','+r.test+','+r.vol15+','+r.vol30+','+r.vol100+','+r.totalVol+','+r.totalRial+','+r.diff30+','+r.diff100+','+r.totalDiff+','+r.endStock+','+r.kasri+'\n'});
   var blob=new Blob([csv],{type:'text/csv;charset=utf-8'});
   var a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download='gas_station_report.csv';a.click();
 }
@@ -479,27 +318,13 @@ function importCSV(e){
   var reader=new FileReader();
   reader.onload=function(ev){
     var lines=ev.target.result.split('\n').slice(1).filter(l=>l.trim());
-    lines.forEach(line=>{
-      var cols=line.split(',');
-      if(cols.length>=14){
-        records.push({
-          date:cols<i class="markdown-ref custom">0</i>,
-          startPeriod:+cols<i class="markdown-ref custom">1</i>,arrived:+cols<i class="markdown-ref custom">2</i>,test:+cols<i class="markdown-ref custom">3</i>,
-          vol15:+cols<i class="markdown-ref custom">4</i>,vol30:+cols<i class="markdown-ref custom">5</i>,vol100:+cols<i class="markdown-ref custom">6</i>,
-          totalVol:+cols<i class="markdown-ref custom">7</i>,totalRial:+cols<i class="markdown-ref custom">8</i>,
-          diff30:+cols<i class="markdown-ref custom">9</i>,diff100:+cols<i class="markdown-ref custom">10</i>,totalDiff:+cols<i class="markdown-ref custom">11</i>,
-          endStock:+cols<i class="markdown-ref custom">12</i>,kasri:+cols<i class="markdown-ref custom">13</i>
-        });
-      }
-    });
+    lines.forEach(line=>{var c=line.split(',');if(c.length>=14){records.push({date:c<i class="markdown-ref custom">0</i>,startPeriod:+c<i class="markdown-ref custom">1</i>,arrived:+c<i class="markdown-ref custom">2</i>,test:+c<i class="markdown-ref custom">3</i>,vol15:+c<i class="markdown-ref custom">4</i>,vol30:+c<i class="markdown-ref custom">5</i>,vol100:+c<i class="markdown-ref custom">6</i>,totalVol:+c<i class="markdown-ref custom">7</i>,totalRial:+c<i class="markdown-ref custom">8</i>,diff30:+c<i class="markdown-ref custom">9</i>,diff100:+c<i class="markdown-ref custom">10</i>,totalDiff:+c<i class="markdown-ref custom">11</i>,endStock:+c<i class="markdown-ref custom">12</i>,kasri:+c<i class="markdown-ref custom">13</i>})}});
     localStorage.setItem('records',JSON.stringify(records));
-    alert('✅ داده‌ها وارد شدند');
-    showReport('daily');
+    alert('✅ داده‌ها وارد شدند');showReport('daily');
   };
   reader.readAsText(file,'UTF-8');
 }
 
-// تنظیمات
 function changeCredentials(){
   var u=document.getElementById('newUser').value;
   var p=document.getElementById('newPass').value;
@@ -512,23 +337,18 @@ function changeCredentials(){
 function clearAllData(){
   if(confirm('⚠️ آیا مطمئن هستید؟ تمام داده‌ها پاک خواهند شد!')){
     if(confirm('این عمل قابل بازگشت نیست. ادامه می‌دهید؟')){
-      records=[];
-      localStorage.removeItem('records');
-      alert('تمام داده‌ها پاک شدند');
-      initForm();
+      records=[];localStorage.removeItem('records');
+      alert('تمام داده‌ها پاک شدند');initForm();
     }
   }
 }
 
-// تم
 function toggleTheme(){
   var t=document.body.getAttribute('data-theme');
   if(t==='dark'){document.body.removeAttribute('data-theme');localStorage.setItem('theme','light')}
   else{document.body.setAttribute('data-theme','dark');localStorage.setItem('theme','dark')}
 }
 if(localStorage.getItem('theme')==='dark')document.body.setAttribute('data-theme','dark');
-
-// Service Worker
 if('serviceWorker' in navigator){navigator.serviceWorker.register('service-worker.js')}
 </script>
 </body>
