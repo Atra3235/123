@@ -9,7 +9,7 @@
 <link href="https://fonts.googleapis.com/css2?family=Vazirmatn:wght@300;400;500;700&display=swap" rel="stylesheet">
 <style>
 *{margin:0;padding:0;box-sizing:border-box}
-:root{--bg:#f0f4f0;--card:#fff;--text:#1a1a1a;--text2:#555;--border:#ddd;--green:#1a5f2a;--red:#c0392b;--blue:#2980b9;--orange:#e67e22;--shadow:0 2px 8px rgba(0,0,0,.1)}
+:root{--bg:#f0f4f0;--card:#fff;--text:#1a1a1a;--text2:#555;--border:#ddd;--green:#1a5f2a;--red:#c0392b;--blue:#2980b9;--shadow:0 2px 8px rgba(0,0,0,.1)}
 [data-theme="dark"]{--bg:#1a1a2e;--card:#16213e;--text:#eee;--text2:#aaa;--border:#333;--shadow:0 2px 8px rgba(0,0,0,.4)}
 body{font-family:'Vazirmatn',sans-serif;background:var(--bg);color:var(--text);min-height:100vh;transition:.3s}
 .container{max-width:600px;margin:0 auto;padding:10px}
@@ -20,7 +20,7 @@ h3{font-size:.95em;color:var(--text2);margin:8px 0 6px}
 .datetime{text-align:center;font-size:.9em;color:var(--text2);margin:6px 0}
 .datetime .time{font-size:1.3em;font-weight:700;color:var(--text);margin:4px 0}
 label{display:block;font-size:.85em;color:var(--text2);margin:6px 0 3px}
-input[type="number"],input[type="text"],input[type="password"]{width:100%;padding:10px;border:1px solid var(--border);border-radius:8px;font-family:inherit;font-size:1em;background:var(--card);color:var(--text);direction:rtl}
+input[type="number"]{width:100%;padding:10px;border:1px solid var(--border);border-radius:8px;font-family:inherit;font-size:1em;background:var(--card);color:var(--text);direction:rtl}
 input:focus{outline:none;border-color:var(--green)}
 input:disabled{background:var(--bg);color:var(--text2);cursor:not-allowed}
 .btn{width:100%;padding:12px;border:none;border-radius:8px;font-family:inherit;font-size:1em;font-weight:500;cursor:pointer;margin:5px 0;transition:.2s}
@@ -42,7 +42,6 @@ input:disabled{background:var(--bg);color:var(--text2);cursor:not-allowed}
 .tab.active{background:var(--green);color:#fff}
 .hidden{display:none}
 .theme-toggle{position:fixed;top:10px;left:10px;background:var(--card);border:1px solid var(--border);border-radius:50%;width:40px;height:40px;cursor:pointer;font-size:1.2em;z-index:100;display:flex;align-items:center;justify-content:center}
-.login-box{max-width:350px;margin:80px auto}
 .report-item{background:var(--bg);border-radius:8px;padding:10px;margin:6px 0;font-size:.85em}
 .report-item .date{font-weight:700;color:var(--green);margin-bottom:4px;font-size:.95em}
 .report-item .row{display:flex;justify-content:space-between;padding:2px 0}
@@ -62,19 +61,7 @@ input:disabled{background:var(--bg);color:var(--text2);cursor:not-allowed}
 <body>
 <button class="theme-toggle" onclick="toggleTheme()">🌙</button>
 
-<div id="loginPage" class="container">
-<div class="card login-box">
-<h1>⛽ مدیریت جایگاه سوخت</h1>
-<label>نام کاربری</label>
-<input type="text" id="loginUser" placeholder="admin">
-<label>رمز عبور</label>
-<input type="password" id="loginPass" placeholder="1234">
-<button class="btn btn-green" onclick="login()" style="margin-top:15px">ورود</button>
-<p id="loginError" style="color:var(--red);text-align:center;margin-top:10px;font-size:.85em"></p>
-</div>
-</div>
-
-<div id="mainPage" class="container hidden">
+<div class="container">
 <div class="card">
 <h1>⛽ مدیریت جایگاه سوخت</h1>
 <div class="datetime">
@@ -89,6 +76,7 @@ input:disabled{background:var(--bg);color:var(--text2);cursor:not-allowed}
 <div class="tab" onclick="showTab('settings')">⚙️</div>
 </div>
 
+<!-- تب ثبت فروش -->
 <div id="tabSales">
 <div class="card">
 <h2>📝 ثبت فروش روزانه</h2>
@@ -115,6 +103,7 @@ input:disabled{background:var(--bg);color:var(--text2);cursor:not-allowed}
 </div>
 </div>
 
+<!-- تب گزارشات -->
 <div id="tabReports" class="hidden">
 <div class="card">
 <h2>📊 گزارشات</h2>
@@ -134,26 +123,19 @@ input:disabled{background:var(--bg);color:var(--text2);cursor:not-allowed}
 </div>
 </div>
 
+<!-- تب تنظیمات -->
 <div id="tabSettings" class="hidden">
 <div class="card">
-<h2>🔐 تغییر رمز عبور</h2>
-<label>نام کاربری جدید</label>
-<input type="text" id="newUser">
-<label>رمز عبور جدید</label>
-<input type="password" id="newPass">
-<button class="btn btn-blue" onclick="changeCredentials()">تغییر</button>
-</div>
-<div class="card">
-<button class="btn btn-red" onclick="logout()">🚪 خروج از حساب</button>
+<h2>⚙️ تنظیمات</h2>
 <button class="btn btn-red" onclick="clearAllData()" style="background:#8b0000">⚠️ پاک کردن تمام داده‌ها</button>
 </div>
 </div>
 </div>
 
 <script>
-let credentials=JSON.parse(localStorage.getItem('credentials'))||{user:'admin',pass:'1234'};
 let records=JSON.parse(localStorage.getItem('records'))||[];
 
+// تاریخ شمسی
 function toJalali(gy,gm,gd){var g_d_m=[0,31,59,90,120,151,181,212,243,273,304,334];var jy=(gy<=1600)?0:979;gy=(gy<=1600)?gy-621:gy-1600;var gy2=(gm>2)?(gy+1):gy;var days=(365*gy)+(parseInt((gy2+3)/4))-(parseInt((gy2+99)/100))+(parseInt((gy2+399)/400))-80+gd+g_d_m[gm-1];jy+=33*(parseInt(days/12053));days%=12053;jy+=4*(parseInt(days/1461));days%=1461;if(days>365){jy+=parseInt((days-1)/365);days=(days-1)%365}var jm=(days<186)?1+parseInt(days/31):7+parseInt((days-186)/30);var jd=1+((days<186)?(days%31):((days-186)%30));return[jy,jm,jd]}
 function getJalaliDate(){var d=new Date();return toJalali(d.getFullYear(),d.getMonth()+1,d.getDate())}
 function getDayName(){var days=['یکشنبه','دوشنبه','سه‌شنبه','چهارشنبه','پنجشنبه','جمعه','شنبه'];return days[new Date().getDay()]}
@@ -169,26 +151,15 @@ function updateDateTime(){
 setInterval(updateDateTime,1000);
 updateDateTime();
 
-function login(){
-  var u=document.getElementById('loginUser').value;
-  var p=document.getElementById('loginPass').value;
-  if(u===credentials.user&&p===credentials.pass){
-    document.getElementById('loginPage').classList.add('hidden');
-    document.getElementById('mainPage').classList.remove('hidden');
-    initForm();
-  }else{document.getElementById('loginError').textContent='نام کاربری یا رمز عبور اشتباه است'}
-}
-function logout(){
-  document.getElementById('mainPage').classList.add('hidden');
-  document.getElementById('loginPage').classList.remove('hidden');
-}
-
+// مقداردهی اولیه فرم
 function initForm(){
   var el=document.getElementById('startPeriod');
   if(records.length===0){el.disabled=false;el.value='';el.placeholder='موجودی اول دوره را وارد کنید'}
   else{el.value=records[records.length-1].endStock;el.disabled=true;el.placeholder='خودکار از رکورد قبلی'}
 }
+initForm();
 
+// تب‌ها
 function showTab(tab){
   document.querySelectorAll('.tab').forEach(t=>t.classList.remove('active'));
   document.getElementById('tabSales').classList.add('hidden');
@@ -199,6 +170,7 @@ function showTab(tab){
   if(tab==='settings'){document.getElementById('tabSettings').classList.remove('hidden');document.querySelectorAll('.tab')<i class="markdown-ref custom">2</i>.classList.add('active')}
 }
 
+// محاسبات خودکار
 function autoCalc(){
   var sp=parseFloat(document.getElementById('startPeriod').value)||0;
   var ar=parseFloat(document.getElementById('arrived').value)||0;
@@ -227,6 +199,7 @@ function autoCalc(){
   window._lastCalc={date:getJalaliDate().join('/'),startPeriod:sp,arrived:ar,test:te,vol15:v15,vol30:v30,vol100:v100,totalVol:tv,totalRial:tr,diff30:d30,diff100:d100,totalDiff:td,endStock:es,kasri:k};
 }
 
+// ذخیره رکورد
 function saveRecord(){
   if(!window._lastCalc){alert('لطفاً ابتدا مقادیر را وارد کنید');return}
   if(window._lastCalc.endStock===0){alert('موجودی آخر دوره را وارد کنید');return}
@@ -242,6 +215,7 @@ function clearForm(){
   window._lastCalc=null;
 }
 
+// گزارشات
 function showReport(type){
   document.querySelectorAll('#tabReports .tab').forEach(t=>t.classList.remove('active'));
   document.getElementById('reportDaily').classList.add('hidden');
@@ -304,6 +278,7 @@ function renderMonthly(){
 
 function deleteRecord(i){if(confirm('حذف این رکورد؟')){records.splice(i,1);localStorage.setItem('records',JSON.stringify(records));renderDaily()}}
 
+// CSV
 function exportCSV(){
   if(records.length===0){alert('رکوردی وجود ندارد');return}
   var bom='\uFEFF';
@@ -325,15 +300,6 @@ function importCSV(e){
   reader.readAsText(file,'UTF-8');
 }
 
-function changeCredentials(){
-  var u=document.getElementById('newUser').value;
-  var p=document.getElementById('newPass').value;
-  if(!u||!p){alert('لطفاً نام کاربری و رمز عبور را وارد کنید');return}
-  credentials.user=u;credentials.pass=p;
-  localStorage.setItem('credentials',JSON.stringify(credentials));
-  alert('✅ اطلاعات ورود تغییر کرد');
-}
-
 function clearAllData(){
   if(confirm('⚠️ آیا مطمئن هستید؟ تمام داده‌ها پاک خواهند شد!')){
     if(confirm('این عمل قابل بازگشت نیست. ادامه می‌دهید؟')){
@@ -343,6 +309,7 @@ function clearAllData(){
   }
 }
 
+// تم
 function toggleTheme(){
   var t=document.body.getAttribute('data-theme');
   if(t==='dark'){document.body.removeAttribute('data-theme');localStorage.setItem('theme','light')}
